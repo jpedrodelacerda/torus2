@@ -1,0 +1,74 @@
+definitions:
+  QueryError:
+    properties:
+      documentation_url:
+        description: documentation link
+        type: string
+        x-go-name: DocumentationURL
+      message:
+        description: error message
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: github.com/jpedrodelacerda/torus2/pkg/handlers
+  User:
+    properties:
+      email:
+        description: the email for the user
+        example: user@example.com
+        type: string
+        x-go-name: Email
+      id:
+        description: the id for the user
+        format: int64
+        minimum: 1
+        type: integer
+        x-go-name: ID
+      password_hash:
+        description: the password hash for the user
+        minLength: 1
+        type: string
+        x-go-name: PasswordHash
+    required:
+    - email
+    type: object
+    x-go-package: github.com/jpedrodelacerda/torus2/pkg/storage/nodb
+  UserList:
+    description: UserList is a collection of users
+    items:
+      $ref: '#/definitions/User'
+    type: array
+    x-go-package: github.com/jpedrodelacerda/torus2/pkg/storage/nodb
+info: {}
+paths:
+  /users:
+    get:
+      description: Returns a list of users registered at the system
+      operationId: listUsers
+      responses:
+        "200":
+          $ref: '#/responses/userListResponse'
+      tags:
+      - users
+  /users/{id}:
+    get:
+      description: Returns a specific user registered
+      operationId: fetchUser
+      responses:
+        "200":
+          $ref: '#/responses/userResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - users
+responses:
+  errorResponse:
+    schema:
+      $ref: '#/definitions/QueryError'
+  userListResponse:
+    schema:
+      $ref: '#/definitions/UserList'
+  userResponse:
+    schema:
+      $ref: '#/definitions/User'
+swagger: "2.0"
