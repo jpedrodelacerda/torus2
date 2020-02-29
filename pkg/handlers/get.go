@@ -10,8 +10,11 @@ import (
 
 // swagger:route GET /users users listUsers
 // Returns a list of users registered at the system
-// Responses:
+//
+// responses:
 // 	200: userListResponse
+
+// ListUsers handle GET requests to return the whole collection of users
 func (s *service) ListUsers(rw http.ResponseWriter, r *http.Request) {
 	s.userRepository.Log("Handle GET Request at", r.URL.Path)
 
@@ -24,10 +27,13 @@ func (s *service) ListUsers(rw http.ResponseWriter, r *http.Request) {
 }
 
 // swagger:route GET /users/{id} users fetchUser
-// Returns a specific user registered
-// Responses:
+// Returns a single user from the collection
+//
+// responses:
 // 	200: userResponse
 // 	404: errorResponse
+
+// FetchUser handles GET requests to return details of a single user
 func (s *service) FetchUser(rw http.ResponseWriter, r *http.Request) {
 	s.userRepository.Log("Handle GET Request at", r.URL.Path)
 

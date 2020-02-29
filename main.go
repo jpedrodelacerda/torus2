@@ -26,10 +26,11 @@ func main() {
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/users", uh.ListUsers)
 	getRouter.HandleFunc("/users/{id:[0-9]+}", uh.FetchUser)
+	getRouter.Use(uh.MiddlewareWriteJSON)
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/users", uh.AddUser)
-	postRouter.Use(uh.MiddlewareValidateUser)
+	postRouter.Use(uh.MiddlewareWriteJSON, uh.MiddlewareValidateUser)
 
 	putRouter := sm.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/users/{id:[0-9]+}", uh.UpdateUser)
@@ -39,11 +40,12 @@ func main() {
 
 	// Documentation bits
 	// handler for documentation
-	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	docsRouter := sm.Methods(http.MethodGet).Subrouter()
+	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml", Title: "Torus API Documentation"}
 	sh := middleware.Redoc(opts, nil)
 
-	getRouter.Handle("/docs", sh)
-	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+	docsRouter.Handle("/docs", sh)
+	docsRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 	// opts := middleware.RedocOpts{RedocURL: "/swagger.yaml"}
 	// docsHandle := middleware.Redoc(opts, nil)
 

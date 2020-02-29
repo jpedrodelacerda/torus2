@@ -18,7 +18,7 @@ func (s *service) MiddlewareValidateUser(next http.Handler) http.Handler {
 		if err != nil {
 			s.userRepository.Log("[ERROR] [Middleware] [Validation] Failed to deserialize user")
 			ne := NewQueryError(err.Error(), s.Docs())
-			rw.WriteHeader(http.StatusBadRequest)
+			rw.WriteHeader(http.StatusUnprocessableEntity)
 			ne.ToJSON(rw)
 			return
 		}
@@ -34,6 +34,14 @@ func (s *service) MiddlewareValidateUser(next http.Handler) http.Handler {
 
 		ctx := context.WithValue(r.Context(), contextKey("user"), user)
 		r = r.WithContext(ctx)
+
+		next.ServeHTTP(rw, r)
+	})
+}
+
+func (s *service) MiddlewareWriteJSON(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Set("Content-Type", "application/json")
 
 		next.ServeHTTP(rw, r)
 	})

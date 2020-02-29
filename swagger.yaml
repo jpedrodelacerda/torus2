@@ -1,5 +1,10 @@
+basePath: /
+consumes:
+- application/json
 definitions:
   QueryError:
+    description: QueryError encapsulates the given error and the documentation URL
+      from the API
     properties:
       documentation_url:
         description: documentation link
@@ -12,10 +17,12 @@ definitions:
     type: object
     x-go-package: github.com/jpedrodelacerda/torus2/pkg/handlers
   User:
+    description: User struct used by the database
     properties:
       email:
         description: the email for the user
-        example: user@example.com
+        format: email
+        maxLength: 255
         type: string
         x-go-name: Email
       id:
@@ -33,13 +40,19 @@ definitions:
     - email
     type: object
     x-go-package: github.com/jpedrodelacerda/torus2/pkg/storage/nodb
-  UserList:
-    description: UserList is a collection of users
-    items:
-      $ref: '#/definitions/User'
-    type: array
-    x-go-package: github.com/jpedrodelacerda/torus2/pkg/storage/nodb
-info: {}
+info:
+  contact:
+    email: tech@torus.com
+    name: Torus
+    url: https://torus.com
+  description: The purpose of this application is to provide means to manage Torus
+    system
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+  termsOfService: None. Use at your own risk.
+  title: Torus API
+  version: 0.0.1
 paths:
   /users:
     get:
@@ -51,9 +64,33 @@ paths:
       tags:
       - users
   /users/{id}:
+    delete:
+      description: Deletes a user from the collection
+      operationId: deleteUser
+      parameters:
+      - description: The user id code
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      responses:
+        "204":
+          $ref: '#/responses/noContent'
+      tags:
+      - users
     get:
-      description: Returns a specific user registered
+      description: Returns a single user from the collection
       operationId: fetchUser
+      parameters:
+      - description: The user id code
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
       responses:
         "200":
           $ref: '#/responses/userResponse'
@@ -61,14 +98,74 @@ paths:
           $ref: '#/responses/errorResponse'
       tags:
       - users
+    post:
+      description: Registers a new user
+      operationId: registerUser
+      parameters:
+      - description: |-
+          User structure to be created or updated
+
+          NOTE: The id parameter is ignored by create and update actions.
+        in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        "201":
+          $ref: '#/responses/userResponse'
+        "422":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - users
+    put:
+      description: Updates the user registry
+      operationId: updateUser
+      parameters:
+      - description: The user id code
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      - description: |-
+          User structure to be created or updated
+
+          NOTE: The id parameter is ignored by create and update actions.
+        in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        "200":
+          $ref: '#/responses/userResponse'
+        "422":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - users
+produces:
+- application/json
 responses:
   errorResponse:
+    description: Structured error returned as a json
     schema:
       $ref: '#/definitions/QueryError'
+  noContent:
+    description: no reply from server
   userListResponse:
+    description: A list of users
     schema:
-      $ref: '#/definitions/UserList'
+      items:
+        $ref: '#/definitions/User'
+      type: array
   userResponse:
+    description: Data structure representing a single user
     schema:
       $ref: '#/definitions/User'
+schemes:
+- http
 swagger: "2.0"

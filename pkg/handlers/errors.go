@@ -12,8 +12,8 @@ var (
 	ErrDeserializationFailed = errors.New("failed to deserialize data")
 )
 
-// swagger:model
 // QueryError encapsulates the given error and the documentation URL from the API
+// swagger:model QueryError
 type QueryError struct {
 	// error message
 	Message string `json:"message"`
@@ -34,6 +34,7 @@ func (q *QueryError) Unwrap() string {
 	return q.Message
 }
 
+// Error method returns the error string
 func (q *QueryError) Error() string {
 	return fmt.Sprint(q.Message)
 }

@@ -17,6 +17,7 @@ type Service interface {
 	AddUser(http.ResponseWriter, *http.Request)
 	UpdateUser(http.ResponseWriter, *http.Request)
 	MiddlewareValidateUser(http.Handler) http.Handler
+	MiddlewareWriteJSON(http.Handler) http.Handler
 	Addr() string
 	Docs() string
 }

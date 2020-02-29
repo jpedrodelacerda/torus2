@@ -6,6 +6,13 @@ import (
 	"github.com/jpedrodelacerda/torus2/pkg/storage/nodb"
 )
 
+// swagger:route DELETE /users/{id} users deleteUser
+// Deletes a user from the collection
+//
+// responses:
+//  204: noContent
+
+// DeleteUser handles DELETE requests for deleting user entries from database
 func (s *service) DeleteUser(rw http.ResponseWriter, r *http.Request) {
 	s.userRepository.Log("Handle DELETE Request at", r.URL.Path)
 	id := getUserID(r)
